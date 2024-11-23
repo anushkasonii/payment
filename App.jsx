@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React from "react";
+import { useState, useEffect } from "react";
 import {
   Box,
   Typography,
@@ -23,73 +24,104 @@ import {
   MobileFriendly as MobileFriendlyIcon,
   School as SchoolIcon,
   LiveHelp as LiveHelpIcon,
-} from '@mui/icons-material';
+} from "@mui/icons-material";
 import CloseIcon from "@mui/icons-material/Close";
-import logo from './assets/coloredLogo-DzaWms3o.svg';
-
+import logo from "./assets/coloredLogo-DzaWms3o.svg";
 
 
 const App = () => {
   const [open, setOpen] = useState(false);
+  const theme = useTheme();
+
   const [gstType, setGstType] = useState("with");
-  const handleOpen = () => setOpen(true);
-const handleClose = () => setOpen(false);
+  const [selectedPlanDuration, setSelectedPlanDuration] = useState(1); // 1 for 1 year, 3 for 3 years
+  const [additionalStudentCount, setAdditionalStudentCount] = useState(0);
+  const [totalCost, setTotalCost] = useState(80000); // Default to ₹240000 for 1 year, 250 students
+  const [discount, setDiscount] = useState(120000); // Default to ₹360000 discount for 1 year
 
-const features = [
-  { icon: <MessageIcon fontSize="large" />, text: "Message", color: "#FF6B6B" },
-  { icon: <EventIcon fontSize="large" />, text: "Event Management", color: "#4ECDC4" },
-  { icon: <BadgeIcon fontSize="large" />, text: "Admission Management", color: "#45B7D1" },
-  { icon: <MobileFriendlyIcon fontSize="large" />, text: "Staff and Parent Mobile App", color: "#96CEB4" },
-  { icon: <SchoolIcon fontSize="large" />, text: "School Profiling", color: "#FFEEAD" },
-  // { icon: <LiveHelpIcon fontSize="large" />, text: "Dedicated Support", color: "#D4A5A5" },
-];
-
-
-  const [additionalStudentCount, setAdditionalStudentCount] = useState(0); // Added this line
-  const [additionalStudentCost, setAdditionalStudentCost] = useState(0);
-  const [totalCost, setTotalCost] = useState(80000); // Set initial total to ₹80000
-
-  const baseCost = 200000; // Fixed cost for 200 students
+  const baseCost = 200000; // Cost for 1 year, 200 students
   const perStudentCost = 1000; // Additional cost per student
-  const [discount, setDiscount] = useState(120000);
 
+  // Function to calculate the total cost and discount based on selected plan and additional students
   const calculateCosts = (additionalStudents) => {
-    const currentCost = baseCost + additionalStudents * perStudentCost;
-    const discountAmount = currentCost * 0.60; // 60% discount
+    const planCost = baseCost * selectedPlanDuration; // Multiply base cost by selected plan duration (1 or 3 years)
+    const currentCost = planCost + additionalStudents * perStudentCost;
+    const discountAmount = currentCost * 0.6; // 60% discount
     setDiscount(discountAmount);
-    setTotalCost(currentCost - discountAmount);
+    setTotalCost(currentCost - discountAmount); // Total after discount
   };
 
+  // Recalculate costs when selectedPlanDuration or additionalStudentCount changes
+  useEffect(() => {
+    calculateCosts(additionalStudentCount);
+  }, [selectedPlanDuration, additionalStudentCount]);
+
+  // Handle the increase in additional students
   const handleIncrease = () => {
     setAdditionalStudentCount((prev) => {
       const newCount = prev + 1;
-      calculateCosts(newCount);
       return newCount;
     });
   };
 
+  // Handle the decrease in additional students
   const handleDecrease = () => {
     setAdditionalStudentCount((prev) => {
       if (prev > 0) {
         const newCount = prev - 1;
-        calculateCosts(newCount);
         return newCount;
       }
       return prev;
     });
   };
+
+  // Handle plan selection (1 year or 3 years)
+  const handlePlanSelection = (duration) => {
+    setSelectedPlanDuration(duration); // Set the selected plan duration
+  };
   
+
+  const features = [
+    {
+      icon: <MessageIcon fontSize="large" />,
+      text: "Message",
+      color: "#FF6B6B",
+    },
+    {
+      icon: <EventIcon fontSize="large" />,
+      text: "Event Management",
+      color: "#4ECDC4",
+    },
+    {
+      icon: <BadgeIcon fontSize="large" />,
+      text: "Admission Management",
+      color: "#45B7D1",
+    },
+    {
+      icon: <MobileFriendlyIcon fontSize="large" />,
+      text: "Staff and Parent Mobile App",
+      color: "#96CEB4",
+    },
+    {
+      icon: <SchoolIcon fontSize="large" />,
+      text: "School Profiling",
+      color: "#FFEEAD",
+    },
+    // { icon: <LiveHelpIcon fontSize="large" />, text: "Dedicated Support", color: "#D4A5A5" },
+  ];
+
+  const Logo = () => (
+    <img src={logo} alt="Logo" style={{ width: 260, height: 60 }} />
+  );
+
   const handleSubmit = (e) => {
     e.preventDefault();
     // Handle form submission here
     handleClose();
   };
 
-  const Logo = () => (
-    <img src={logo} alt="Logo" style={{ width: 260, height: 60 }} />
-);
-
-  const theme = useTheme();
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
 
   return (
     <>
@@ -111,7 +143,6 @@ const features = [
         <Box
           display="flex"
           flexDirection="column"
-          
           sx={{
             width: "48%",
             height: "90%",
@@ -142,7 +173,8 @@ const features = [
                 width: "290px",
                 color: "black",
                 fontWeight: "bold",
-                backgroundColor: "#d0c8d4",
+                backgroundColor:
+                  selectedPlanDuration === 1 ? "#d0c8d4" : "white",
                 borderRadius: "0",
                 boxShadow: "none",
                 marginTop: "25px",
@@ -152,6 +184,7 @@ const features = [
                   boxShadow: "none",
                 },
               }}
+              onClick={() => handlePlanSelection(1)} // Select 1 Year
             >
               1 Year
             </Button>
@@ -161,7 +194,8 @@ const features = [
                 width: "290px",
                 color: "black",
                 fontWeight: "bold",
-                backgroundColor: "white",
+                backgroundColor:
+                  selectedPlanDuration === 3 ? "#d0c8d4" : "white",
                 borderRadius: "0",
                 marginTop: "25px",
                 boxShadow: "none",
@@ -171,6 +205,7 @@ const features = [
                   boxShadow: "none",
                 },
               }}
+              onClick={() => handlePlanSelection(3)} // Select 3 Years
             >
               3 Years
             </Button>
@@ -185,24 +220,29 @@ const features = [
             }}
           >
             <Typography variant="h6" sx={{ fontSize: "18px" }}>
-              KidzShala Lite Plan (200 Students Enrolled)
+              KidzShala Lite Plan ({selectedPlanDuration * 200} Students
+              Enrolled)
             </Typography>
             <Typography
               variant="h6"
               sx={{ fontSize: "22px", fontWeight: "bold" }}
             >
-              ₹200000
+              ₹{(baseCost * selectedPlanDuration).toFixed(2)}{" "}
+              {/* Display the plan cost based on selected duration */}
             </Typography>
           </Box>
+
           <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
             <Typography
               variant="h6"
               sx={{ fontSize: "15px", color: "#958DA8" }}
             >
-              For 1 Year
+              For {selectedPlanDuration} Year
+              {selectedPlanDuration > 1 ? "s" : ""}
             </Typography>
           </Box>
 
+          {/* Additional Students Section */}
           <Box
             sx={{
               display: "flex",
@@ -253,9 +293,8 @@ const features = [
                 +
               </IconButton>
             </Box>
-           
           </Box>
-         
+
           <Box
             sx={{
               display: "flex",
@@ -267,12 +306,13 @@ const features = [
               variant="h6"
               sx={{ fontSize: "15px", color: "#958DA8", fontWeight: "normal" }}
             >
-              Per Student 1000/Year
+              Per Student ₹1000/Year
             </Typography>
           </Box>
 
           <Box sx={{ my: 5, borderTop: 1, borderColor: "divider" }} />
 
+          {/* Discount Section */}
           <Box
             sx={{
               display: "flex",
@@ -284,9 +324,11 @@ const features = [
               Discount (60%)
             </Typography>
             <Typography variant="h6" sx={{ fontSize: "18px" }}>
-            ₹{discount.toFixed(2)}
+              ₹{discount.toFixed(2)}
             </Typography>
           </Box>
+
+          {/* Total Section */}
           <Box
             sx={{
               display: "flex",
@@ -305,7 +347,7 @@ const features = [
               variant="h6"
               sx={{ fontSize: "22px", fontWeight: "bold" }}
             >
-               ₹{totalCost.toFixed(2)}
+              ₹{totalCost.toFixed(2)}
             </Typography>
           </Box>
           <Box
@@ -319,7 +361,7 @@ const features = [
               variant="h6"
               sx={{ fontSize: "14px", fontWeight: "bold" }}
             >
-              For 250 Students for 1 Year
+              For 250 Students for {selectedPlanDuration} Year
             </Typography>
             <Typography
               variant="h6"
@@ -351,116 +393,134 @@ const features = [
             Payment
           </Button>
         </Box>
-        
 
         {/* Second Flexbox */}
         <Container maxWidth="lg" sx={{ py: 8 }}>
-      <Box sx={{ mb: 2, textAlign: 'center' }}>
-        <Logo />
-      </Box>
-      
-      <Paper
-        elevation={0}
-        sx={{
-          width: "100%",
-          height:'90%',
-          padding: 0, // Ensure no padding inside the box
-          margin: 0,  
-          backgroundColor: "white",
-          borderRadius: 4,
-          border: "1px solid",
-          borderColor: theme.palette.divider,
-          overflow: 'hidden',
-          position: 'relative',
-        }}
-      >
-        {/* Background Gradient */}
-        <Box
-          sx={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            height: '200px',
-           
-            opacity: 0.03,
-          }}
-        />
+          <Box sx={{ mb: 2, textAlign: "center" }}>
+            <Logo />
+          </Box>
 
-        <Box sx={{ p: 4, position: 'relative' }}>
-          <Typography
-            variant="h5"
+          <Paper
+            elevation={0}
             sx={{
-              fontWeight: 800,
-              color: "#3f2189",
-              mb: 3,
-              textAlign: 'center',
-              letterSpacing: '0.5px',
-              fontSize:'20px'
+              width: "100%",
+              height: "90%",
+              padding: 0, // Ensure no padding inside the box
+              margin: 0,
+              backgroundColor: "white",
+              borderRadius: 4,
+              border: "1px solid",
+              borderColor: theme.palette.divider,
+              overflow: "hidden",
+              position: "relative",
             }}
           >
-            Smart Management to Grow Your School
-          </Typography>
+            {/* Background Gradient */}
+            <Box
+              sx={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                right: 0,
+                height: "200px",
 
-          <Box sx={{ width: '100vw',position: 'absolute', left: 0, marginBottom:15, borderTop: '2px solid', borderColor: alpha('#3f2189', 0.1) }} />
+                opacity: 0.03,
+              }}
+            />
 
-          <Grid container spacing={1} sx={{mt:4}}>
-            {features.map((feature, index) => (
-              <Grid item xs={12} key={index}>
-                <Paper
-                  elevation={0}
-                  sx={{
-                    p: 2.6,
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 5,
-                    transition: 'all 0.3s ease',
-                    borderRadius: 2,
-                    border: '1px solid',
-                    borderColor: 'transparent',
-                    '&:hover': {
-                      transform: 'translateX(8px)',
-                      backgroundColor: alpha(feature.color, 0.1),
-                      borderColor: alpha(feature.color, 0.3),
-                    },
-                  }}
-                >
-                  <Box
-                    sx={{
-                      width: 16,
-                      height: 16,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      borderRadius: 2,
-                      backgroundColor: alpha(feature.color, 0.15),
-                      color: feature.color,
-                    }}
-                  >
-                    {feature.icon}
-                  </Box>
-                  <Typography
-                    sx={{
-                      fontSize: '1.2rem',
-                      fontWeight: 500,
-                      color: '#2D3748',
-                      flex: 1,
-                    }}
-                  >
-                    {feature.text}
-                  </Typography>
-                </Paper>
+            <Box sx={{ p: 4, position: "relative" }}>
+              <Typography
+                variant="h5"
+                sx={{
+                  fontWeight: 800,
+                  color: "#3f2189",
+                  mb: 3,
+                  textAlign: "center",
+                  letterSpacing: "0.5px",
+                  fontSize: "20px",
+                }}
+              >
+                Smart Management to Grow Your School
+              </Typography>
+
+              <Box
+                sx={{
+                  width: "100vw",
+                  position: "absolute",
+                  left: 0,
+                  marginBottom: 15,
+                  borderTop: "2px solid",
+                  borderColor: alpha("#3f2189", 0.1),
+                }}
+              />
+
+              <Grid container spacing={1} sx={{ mt: 4 }}>
+                {features.map((feature, index) => (
+                  <Grid item xs={12} key={index}>
+                    <Paper
+                      elevation={0}
+                      sx={{
+                        p: 2.6,
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 5,
+                        transition: "all 0.3s ease",
+                        borderRadius: 2,
+                        border: "1px solid",
+                        borderColor: "transparent",
+                        "&:hover": {
+                          transform: "translateX(8px)",
+                          backgroundColor: alpha(feature.color, 0.1),
+                          borderColor: alpha(feature.color, 0.3),
+                        },
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          width: 16,
+                          height: 16,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          borderRadius: 2,
+                          backgroundColor: alpha(feature.color, 0.15),
+                          color: feature.color,
+                        }}
+                      >
+                        {feature.icon}
+                      </Box>
+                      <Typography
+                        sx={{
+                          fontSize: "1.2rem",
+                          fontWeight: 500,
+                          color: "#2D3748",
+                          flex: 1,
+                        }}
+                      >
+                        {feature.text}
+                      </Typography>
+                    </Paper>
+                  </Grid>
+                ))}
               </Grid>
-            ))}
-          </Grid>
-        </Box>
-      </Paper>
-    </Container>
-       
+            </Box>
+          </Paper>
+        </Container>
       </Box>
 
       {/* THE LINE */}
-      <Typography sx={{fontSize: '18px', fontWeight:'bold', color: '#635881', marginTop:'-38px', marginLeft:'60px'}}> Our Promise 100% Safe 100% auto backup</Typography>
+      <Typography
+        sx={{
+          fontSize: "18px",
+          fontWeight: "bold",
+          color: "#635881",
+          marginTop: "-38px",
+          marginLeft: "60px",
+        }}
+      >
+        {" "}
+        Our Promise 100% Safe 100% auto backup
+      </Typography>
 
       {/* Billing Details Dialog */}
       <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
@@ -494,7 +554,6 @@ const features = [
         </DialogTitle>
         <DialogContent>
           <form onSubmit={handleSubmit}>
-            
             {gstType === "with" && (
               <TextField
                 required
@@ -582,13 +641,9 @@ const features = [
               >
                 Save And Proceed To Payment
               </Button>
-              
             </Box>
-            
           </form>
-          
         </DialogContent>
-       
       </Dialog>
     </>
   );
