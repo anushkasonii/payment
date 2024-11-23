@@ -4,29 +4,45 @@ import {
   Typography,
   Dialog,
   DialogTitle,
+  Paper,
+  Grid,
+  useTheme,
+  alpha,
   DialogContent,
   FormControlLabel,
   TextField,
   IconButton,
+  Container,
 } from "@mui/material";
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
-import TimelineIcon from "@mui/icons-material/Timeline";
-import MessageIcon from "@mui/icons-material/Message";
-import EventIcon from "@mui/icons-material/Event";
-import BadgeIcon from "@mui/icons-material/Badge";
-import PaymentIcon from "@mui/icons-material/Payment";
-import InsightsIcon from "@mui/icons-material/Insights";
-import MobileFriendlyIcon from "@mui/icons-material/MobileFriendly";
-import SchoolIcon from "@mui/icons-material/School";
-import LiveHelpIcon from "@mui/icons-material/LiveHelp";
+import {
+  Message as MessageIcon,
+  Event as EventIcon,
+  Badge as BadgeIcon,
+  MobileFriendly as MobileFriendlyIcon,
+  School as SchoolIcon,
+  LiveHelp as LiveHelpIcon,
+} from '@mui/icons-material';
 import CloseIcon from "@mui/icons-material/Close";
+import logo from './assets/coloredLogo-DzaWms3o.svg';
+
+
 
 const App = () => {
   const [open, setOpen] = useState(false);
   const [gstType, setGstType] = useState("with");
   const handleOpen = () => setOpen(true);
 const handleClose = () => setOpen(false);
+
+const features = [
+  { icon: <MessageIcon fontSize="large" />, text: "Message", color: "#FF6B6B" },
+  { icon: <EventIcon fontSize="large" />, text: "Event Management", color: "#4ECDC4" },
+  { icon: <BadgeIcon fontSize="large" />, text: "Admission Management", color: "#45B7D1" },
+  { icon: <MobileFriendlyIcon fontSize="large" />, text: "Staff and Parent Mobile App", color: "#96CEB4" },
+  { icon: <SchoolIcon fontSize="large" />, text: "School Profiling", color: "#FFEEAD" },
+  // { icon: <LiveHelpIcon fontSize="large" />, text: "Dedicated Support", color: "#D4A5A5" },
+];
 
 
   const [additionalStudentCount, setAdditionalStudentCount] = useState(0); // Added this line
@@ -69,6 +85,12 @@ const handleClose = () => setOpen(false);
     handleClose();
   };
 
+  const Logo = () => (
+    <img src={logo} alt="Logo" style={{ width: 260, height: 60 }} />
+);
+
+  const theme = useTheme();
+
   return (
     <>
       {/* Outer box */}
@@ -76,7 +98,7 @@ const handleClose = () => setOpen(false);
         display="flex"
         flexDirection="row"
         justifyContent="space-between"
-        gap={10}
+        gap={8}
         alignItems="center"
         sx={{
           height: "75vh",
@@ -89,13 +111,15 @@ const handleClose = () => setOpen(false);
         <Box
           display="flex"
           flexDirection="column"
+          
           sx={{
-            width: "50%",
+            width: "48%",
             height: "90%",
-            backgroundColor: "white",
             padding: 3,
-            borderRadius: 1,
-            border: "1px solid #E6E5E5",
+            backgroundColor: "white",
+            borderRadius: 4,
+            border: "1px solid",
+            borderColor: theme.palette.divider,
           }}
         >
           <Typography
@@ -330,61 +354,108 @@ const handleClose = () => setOpen(false);
         
 
         {/* Second Flexbox */}
+        <Container maxWidth="lg" sx={{ py: 8 }}>
+      <Box sx={{ mb: 2, textAlign: 'center' }}>
+        <Logo />
+      </Box>
+      
+      <Paper
+        elevation={0}
+        sx={{
+          width: "100%",
+          height:'90%',
+          padding: 0, // Ensure no padding inside the box
+          margin: 0,  
+          backgroundColor: "white",
+          borderRadius: 4,
+          border: "1px solid",
+          borderColor: theme.palette.divider,
+          overflow: 'hidden',
+          position: 'relative',
+        }}
+      >
+        {/* Background Gradient */}
         <Box
-          display="flex"
-          flexDirection="column"
           sx={{
-            width: "45%",
-            height: "75%",
-            marginBottom: "-90px",
-            backgroundColor: "white",
-            padding: 3,
-            borderRadius: 1,
-            border: "1px solid #E6E5E5",
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: '200px',
+           
+            opacity: 0.03,
           }}
-        >
+        />
+
+        <Box sx={{ p: 4, position: 'relative' }}>
           <Typography
-            variant="h6"
+            variant="h5"
             sx={{
-              fontWeight: "bold",
-              alignContent: "center",
+              fontWeight: 800,
               color: "#3f2189",
+              mb: 3,
+              textAlign: 'center',
+              letterSpacing: '0.5px',
+              fontSize:'20px'
             }}
           >
             Smart Management to Grow Your School
           </Typography>
 
-          <Box sx={{ my: 2.5, borderTop: 1, borderColor: "divider" }} />
+          <Box sx={{ width: '100vw',position: 'absolute', left: 0, marginBottom:15, borderTop: '2px solid', borderColor: alpha('#3f2189', 0.1) }} />
 
-          {[
-            // { icon: <TimelineIcon />, text: "Activity Timeline" },
-            { icon: <MessageIcon />, text: "Message" },
-            { icon: <EventIcon />, text: "Event Management" },
-            { icon: <BadgeIcon />, text: "Admission Management" },
-            // { icon: <PaymentIcon />, text: "Fees Collections" },
-            // { icon: <InsightsIcon />, text: "Analytics Dashboard" },
-            {
-              icon: <MobileFriendlyIcon />,
-              text: "Staff and Parent Mobile App",
-            },
-            { icon: <SchoolIcon />, text: "School Profiling" },
-            { icon: <LiveHelpIcon />, text: "Dedicated Support" },
-          ].map((feature, index) => (
-            <Box
-              key={index}
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                mt: 2,
-              }}
-            >
-              {feature.icon}
-              <Typography sx={{ fontSize: 21, ml: 12.5 }}>
-                {feature.text}
-              </Typography>
-            </Box>
-          ))}
+          <Grid container spacing={1} sx={{mt:4}}>
+            {features.map((feature, index) => (
+              <Grid item xs={12} key={index}>
+                <Paper
+                  elevation={0}
+                  sx={{
+                    p: 2.6,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 5,
+                    transition: 'all 0.3s ease',
+                    borderRadius: 2,
+                    border: '1px solid',
+                    borderColor: 'transparent',
+                    '&:hover': {
+                      transform: 'translateX(8px)',
+                      backgroundColor: alpha(feature.color, 0.1),
+                      borderColor: alpha(feature.color, 0.3),
+                    },
+                  }}
+                >
+                  <Box
+                    sx={{
+                      width: 16,
+                      height: 16,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      borderRadius: 2,
+                      backgroundColor: alpha(feature.color, 0.15),
+                      color: feature.color,
+                    }}
+                  >
+                    {feature.icon}
+                  </Box>
+                  <Typography
+                    sx={{
+                      fontSize: '1.2rem',
+                      fontWeight: 500,
+                      color: '#2D3748',
+                      flex: 1,
+                    }}
+                  >
+                    {feature.text}
+                  </Typography>
+                </Paper>
+              </Grid>
+            ))}
+          </Grid>
         </Box>
+      </Paper>
+    </Container>
        
       </Box>
 
