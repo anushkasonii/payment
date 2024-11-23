@@ -51,7 +51,7 @@ const features = [
 
   const baseCost = 200000; // Fixed cost for 200 students
   const perStudentCost = 1000; // Additional cost per student
-  const [discount, setDiscount] = useState(0);
+  const [discount, setDiscount] = useState(120000);
 
   const calculateCosts = (additionalStudents) => {
     const currentCost = baseCost + additionalStudents * perStudentCost;
